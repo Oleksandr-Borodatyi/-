@@ -58,19 +58,38 @@ function setters() {
     }
 }
 
-/*====================================================================================================================================
+/*====================================================================================================================================*/
 
-function additionalMethods() {
+const additionalMethods = {
+    getReviewByID: function(reviewID) {
+        return this.reviews.find(review => review.ID === reviewID);
+    },
+    addReview: function(newReview) {
+        this.reviews.push(newReview);
+    },
+    deleteReview: function(reviewID) {
+        this.reviews = this.reviews.filter(review => review.ID !== reviewID);
+    },
+    getAverageRating: function() {
+        let totalRating = 0;
+        let ratingCount = 0;
+        for (let review of this.reviews) {
+            totalRating += review.rating.reduce((sum, rate) => sum + rate, 0);
+            ratingCount += review.rating.length;
+        }
+        return ratingCount > 0 ? totalRating / ratingCount : 0;
+    }
+};
+
+function addAdditionalMethods() {
     for (let a = 0; a < arrayProducts.length; a++) {
-        for (let b = 0; b < arrayAdditionalMethods.length; b++) {
-            let parameter = arrayAdditionalMethods[b];
-            arrayProducts[a][parameter] = (value) => (arrayProducts[a][parameter] = value)
-            return arrayProducts[a][parameter];
+        for (let methodName in additionalMethods) {
+            arrayProducts[a][methodName] = additionalMethods[methodName];
         }
     }
 }
 
-====================================================================================================================================*/
+/*====================================================================================================================================*/
 
 function AddProduct() {
     for (let a = 0; a < arrayProducts.length; a++) {
@@ -140,23 +159,38 @@ function deleteReviews() {
 
 }
 
-/*================================================================================================================================*/
-
 function searchProduct() {
-    let searchProductInProducts = alert("Name or ID");
-    let arrayOfFoundProducts =[];
-    let arrayOfSearchLetters = [];
-    for(let a = 0; a < searchProductInProducts.length; a++) {
-        
+    function searchProductsByKeyword(keyword) {
+        keyword = keyword.toLowerCase();
+        return arrayProducts.filter(product => {
+            return (
+                product.name.toLowerCase().includes(keyword) ||
+                product.description.toLowerCase().includes(keyword)
+            );
+        });
     }
-    for (let products in arrayProducts) {
-
-    }
+    let keyword = prompt("Product name or keyword:");
+    let results = searchProductsByKeyword(keyword);
+    console.log(results);
 }
 
+/*================================================================================================================================*/
 
 function sortingProducts() {
-
+    let criterion = prompt("Sorting criterion: 'price', 'name' or 'ID'");
+    
+    function sortProducts(criterion) {
+        return arrayProducts.sort((a, b) => {
+            if (criterion === "price") {
+                return a.price - b.price; 
+            } else if (criterion === "name") {
+                return a.name.localeCompare(b.name); 
+            } else if (criterion === "ID") {
+                return a.ID - b.ID;
+            }
+        });
+    }
+    console.log(sortProducts(criterion)); 
 }
 
 /*================================================================================================================================*/
